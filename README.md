@@ -20,7 +20,7 @@
 
 
 ## Requirements
-- [Java 8](https://www.oracle.com/java/technologies/javase/javase8u211-later-archive-downloads.html) (**for development**), to use the app normally you can download it from [Here  ⬇️](#)
+- [Java 8](https://www.oracle.com/java/technologies/javase/javase8u211-later-archive-downloads.html) (**for development**), to use the app normally you can download it from [Here  ⬇️ (EXE 64-bit)](https://github.com/AbdelrahmanBayoumi/PDF-To-Image/releases/download/v1.0.0/PDF-To-Image-1.0.0.exe)
 - [Maven 3.3+ ](https://maven.apache.org)
     - [(How to Install)](https://youtu.be/--Iv5vBIHjI)
 
