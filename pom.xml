@@ -15,7 +15,9 @@
         <jdk.version>1.8</jdk.version>
         <app.name>PDF-To-Image</app.name>
         <mainClass>com.bayoumi.Launcher</mainClass>
+        <exe.version>1.0.0</exe.version>
     </properties>
+
     <dependencies>
         <!-- JFoenix library is an open source Java library, that implements Google Material Design using Java components. -->
         <dependency>
@@ -31,35 +33,27 @@
             <version>8.9</version>
         </dependency>
 
-        <!-- ControlsFX High quality UI controls to complement the core JavaFX distribution. -->
-        <dependency>
-            <groupId>org.controlsfx</groupId>
-            <artifactId>controlsfx</artifactId>
-            <version>8.40.18</version>
-        </dependency>   <!-- Sentry.io Open-source error tracking with full stackTraces & asynchronous context. -->
-        <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry</artifactId>
-            <version>6.3.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>2.0.26</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/fontbox -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>fontbox</artifactId>
             <version>2.0.26</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>jbig2-imageio</artifactId>
@@ -80,13 +74,14 @@
                     <appName>${app.name}</appName>
                     <title>${app.name}</title>
                     <description>${app.name}</description>
+                    <nativeReleaseVersion>${exe.version}</nativeReleaseVersion>
                     <needMenu>true</needMenu>
                     <needShortcut>true</needShortcut>
                     <mainClass>${mainClass}</mainClass>
-<!--                    <additionalAppResources>jarFiles</additionalAppResources>-->
-<!--                    <bundleArguments>-->
-<!--                        <icon>${project.basedir}/src/main/deploy/package/windows/Azkar.ico</icon>-->
-<!--                    </bundleArguments>-->
+                    <additionalAppResources>jarFiles</additionalAppResources>
+                    <bundleArguments>
+                        <icon>${project.basedir}/src/main/deploy/package/windows/icon.ico</icon>
+                    </bundleArguments>
                 </configuration>
             </plugin>
         </plugins>
