@@ -34,7 +34,7 @@
             </ImageView>
          </graphic>
         </Label>
-        <AnchorPane fx:id="inputBox" onMouseClicked="#chooseFile" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: -fx-secondary-light; -fx-background-radius: 15;">
+        <AnchorPane fx:id="inputBox" onDragDropped="#handleFileDroppedEvent" onDragOver="#handleFileOverEvent" onMouseClicked="#chooseFile" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: -fx-secondary-light; -fx-background-radius: 15;">
             <VBox.margin>
                 <Insets bottom="10.0" top="10.0" />
             </VBox.margin>

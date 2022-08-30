@@ -12,6 +12,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -46,10 +49,35 @@ public class HomeController implements Initializable {
         chooseFileBox.setVisible(true);
         progressBox.visibleProperty().bind(convertButton.disabledProperty().not());
         progressBox.visibleProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("gggggggggggg");
             progressBar.setProgress(0);
             status.setText("");
         });
+
+    }
+
+    @FXML
+    private void handleFileOverEvent(DragEvent event) {
+        if (chosenPDF != null)
+            return;
+        Dragboard db = event.getDragboard();
+        if (db.hasFiles()) {
+            event.acceptTransferModes(TransferMode.COPY);
+        } else {
+            event.consume();
+        }
+    }
+
+    @FXML
+    private void handleFileDroppedEvent(DragEvent event) {
+        if (chosenPDF != null)
+            return;
+        chosenPDF = ((Dragboard) event.getDragboard()).getFiles().get(0);
+        setFileData(chosenPDF);
+
+        if (canConvert()) {
+            convertButton.setDisable(false);
+            convertButton.setText("Convert");
+        }
     }
 
     @FXML
@@ -102,12 +130,14 @@ public class HomeController implements Initializable {
     @FXML
     private void chooseOutputDir() {
         final DirectoryChooser directoryChooser = new DirectoryChooser();
-        outputDir = directoryChooser.showDialog(SingleInstance.getInstance().getCurrentStage());
         directoryChooser.setTitle("Choose output Folder");
+        outputDir = directoryChooser.showDialog(SingleInstance.getInstance().getCurrentStage());
+        if (outputDir != null) {
+            outputDirTextField.setText(outputDir.getAbsolutePath());
+        }
         if (canConvert()) {
             convertButton.setDisable(false);
             convertButton.setText("Convert");
-            outputDirTextField.setText(outputDir.getAbsolutePath());
         }
     }
 
@@ -117,11 +147,13 @@ public class HomeController implements Initializable {
         inputBox.setDisable(true);
         chooseOutputDirButton.setDisable(true);
         /*
-         * 600 dpi give good image clarity but size of each image is 2x times of 300 dpi.
-         * Ex:  1. For 300dpi img.png expected size is 797 KB
-         *      2. For 600dpi img.png expected size is 2.42 MB
+         * 600 dpi give good image clarity but size of each image is 2x times of 300
+         * dpi.
+         * Ex: 1. For 300dpi img.png expected size is 797 KB
+         * 2. For 600dpi img.png expected size is 2.42 MB
          */
-        // use less dpi for to save more space in hard-disk. For professional usage you can use more than 300dpi
+        // use less dpi for to save more space in hard-disk. For professional usage you
+        // can use more than 300dpi
         final int DPI = 300;
         final String FILE_EXTENSION = "png";
         new Thread(() -> {
