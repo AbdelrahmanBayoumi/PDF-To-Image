@@ -89,14 +89,26 @@ public class HomeController implements Initializable {
         convertButton.setText("Not ready to convert yet");
     }
 
+    private String getFileExtenstion(File file) {
+        if (file == null)
+            return "";
+        final String name = file.getName();
+        final int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return "";
+        }
+        return name.substring(lastIndexOf).toLowerCase();
+    }
+
     private void setFileData(File file) {
-        if (file == null) {
+        if ((file == null) || (!getFileExtenstion(file).equals(".pdf"))) {
             fileName.setText("");
             numberOfPages.setText("0");
 
             fileDetailsBox.setVisible(false);
             chooseFileBox.setVisible(true);
             inputBox.setOnMouseClicked(event -> chooseFile());
+            chosenPDF = null;
         } else {
             fileDetailsBox.setVisible(true);
             chooseFileBox.setVisible(false);
