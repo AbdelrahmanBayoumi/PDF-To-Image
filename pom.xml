@@ -15,7 +15,7 @@
         <jdk.version>1.8</jdk.version>
         <app.name>PDF-To-Image</app.name>
         <mainClass>com.bayoumi.Launcher</mainClass>
-        <exe.version>1.0.0</exe.version>
+        <exe.version>2.0.0</exe.version>
     </properties>
 
     <dependencies>

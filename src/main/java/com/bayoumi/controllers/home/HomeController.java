@@ -1,9 +1,11 @@
 package com.bayoumi.controllers.home;
 
 import com.bayoumi.util.ConvertUtil;
+import com.bayoumi.util.FileUtils;
 import com.bayoumi.util.Logger;
 import com.bayoumi.util.Utility;
 import com.bayoumi.util.gui.BuilderUI;
+import com.bayoumi.util.gui.component.FileBox;
 import com.bayoumi.util.validation.SingleInstance;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.application.Platform;
@@ -23,14 +25,18 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeController implements Initializable {
-    private File chosenPDF, outputDir;
+    private List<File> files = new ArrayList<>();
+    private File outputDir;
     @FXML
-    private Label numberOfPages, fileName, status;
+    private Label status;
     @FXML
-    private VBox fileDetailsBox, chooseFileBox, progressBox;
+    private VBox fileDetailsBox, chooseFileBox, progressBox, filesContainer;
     @FXML
     private AnchorPane inputBox;
     @FXML
@@ -52,12 +58,14 @@ public class HomeController implements Initializable {
             progressBar.setProgress(0);
             status.setText("");
         });
-
     }
 
+    /**
+     * Handle what happened when mouse drag a file or list of files to the box
+     */
     @FXML
     private void handleFileOverEvent(DragEvent event) {
-        if (chosenPDF != null)
+        if (files != null && !files.isEmpty())
             return;
         Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
@@ -67,12 +75,21 @@ public class HomeController implements Initializable {
         }
     }
 
+    /**
+     * Handle what happened when mouse drag then drop a file or list of files to the box
+     */
     @FXML
     private void handleFileDroppedEvent(DragEvent event) {
-        if (chosenPDF != null)
+        if (files != null && !files.isEmpty())
             return;
-        chosenPDF = ((Dragboard) event.getDragboard()).getFiles().get(0);
-        setFileData(chosenPDF);
+        files = event.getDragboard().getFiles();
+        if (files == null) {
+            files = new ArrayList<>();
+        } else {
+            // filter files
+            files.removeIf(file -> !FileUtils.getFileExtension(file).equals(".pdf"));
+        }
+        setFilesData(files);
 
         if (canConvert()) {
             convertButton.setDisable(false);
@@ -81,45 +98,37 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    private void removeFile() {
-        chosenPDF = null;
-        setFileData(null);
+    private void removeAllFiles() {
+        if (files == null) {
+            files = new ArrayList<>();
+        }
+        files.clear();
+        setFilesData(files);
 
         convertButton.setDisable(true);
         convertButton.setText("Not ready to convert yet");
     }
 
-    private String getFileExtenstion(File file) {
-        if (file == null)
-            return "";
-        final String name = file.getName();
-        final int lastIndexOf = name.lastIndexOf(".");
-        if (lastIndexOf == -1) {
-            return "";
-        }
-        return name.substring(lastIndexOf).toLowerCase();
-    }
 
-    private void setFileData(File file) {
-        if ((file == null) || (!getFileExtenstion(file).equals(".pdf"))) {
-            fileName.setText("");
-            numberOfPages.setText("0");
-
+    private void setFilesData(List<File> filesChosen) {
+        System.out.println(filesChosen);
+        if ((filesChosen == null || filesChosen.isEmpty())) {
+            filesContainer.getChildren().clear();
             fileDetailsBox.setVisible(false);
             chooseFileBox.setVisible(true);
             inputBox.setOnMouseClicked(event -> chooseFile());
-            chosenPDF = null;
         } else {
             fileDetailsBox.setVisible(true);
             chooseFileBox.setVisible(false);
             inputBox.setOnMouseClicked(null);
-
-            try (final PDDocument DOCUMENT = PDDocument.load(file)) {
-                fileName.setText(file.getName());
-                numberOfPages.setText(String.valueOf(DOCUMENT.getNumberOfPages()));
-            } catch (Exception ex) {
-                Logger.error(ex.getLocalizedMessage(), ex, getClass().getName() + ".setFileData()");
-            }
+            filesContainer.getChildren().clear();
+            filesChosen.forEach(file -> {
+                try (final PDDocument DOCUMENT = PDDocument.load(file)) {
+                    filesContainer.getChildren().add(new FileBox(file.getName(), DOCUMENT.getNumberOfPages()));
+                } catch (Exception ex) {
+                    Logger.error(ex.getLocalizedMessage(), ex, getClass().getName() + ".setFilesData()");
+                }
+            });
         }
 
     }
@@ -129,9 +138,13 @@ public class HomeController implements Initializable {
         final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose PDF");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDF Only", "*.pdf", "*.PDF"));
-        chosenPDF = fileChooser.showOpenDialog(SingleInstance.getInstance().getCurrentStage());
-        if (chosenPDF != null) {
-            setFileData(chosenPDF);
+        files.clear();
+        final List<File> list = fileChooser.showOpenMultipleDialog(SingleInstance.getInstance().getCurrentStage());
+        if (list != null) {
+            files.addAll(list);
+        }
+        if (files != null) {
+            setFilesData(files);
         }
         if (canConvert()) {
             convertButton.setDisable(false);
@@ -139,6 +152,9 @@ public class HomeController implements Initializable {
         }
     }
 
+    /**
+     * Opens Directory Chooser to choose Output directory
+     */
     @FXML
     private void chooseOutputDir() {
         final DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -151,6 +167,18 @@ public class HomeController implements Initializable {
             convertButton.setDisable(false);
             convertButton.setText("Convert");
         }
+    }
+
+    private int getNumberOfPages(List<File> filesList) {
+        int count = 0;
+        for (File file : filesList) {
+            try (final PDDocument DOCUMENT = PDDocument.load(file)) {
+                count += DOCUMENT.getNumberOfPages();
+            } catch (Exception ex) {
+                Logger.error(ex.getLocalizedMessage(), ex, getClass().getName() + ".setFilesData()");
+            }
+        }
+        return count;
     }
 
     @FXML
@@ -168,35 +196,39 @@ public class HomeController implements Initializable {
         // can use more than 300dpi
         final int DPI = 300;
         final String FILE_EXTENSION = "png";
-        new Thread(() -> {
-            try {
-                ConvertUtil.convert(chosenPDF, outputDir, FILE_EXTENSION, DPI, (currentPage, totalNumberOfPages) -> {
-                    Platform.runLater(() -> {
-                        progressBar.setProgress((currentPage + 1) * 1.0 / totalNumberOfPages);
+        final int totalNumOfPagesOfFiles = getNumberOfPages(files);
+        AtomicInteger currentPageStat = new AtomicInteger();
+        new Thread(() ->
+                files.forEach(file -> {
+                    try {
+                        ConvertUtil.convert(file, outputDir, FILE_EXTENSION, DPI, (currentPage, totalNumberOfPages) -> {
+                            Platform.runLater(() -> {
+                                progressBar.setProgress((currentPageStat.get() + 1) * 1.0 / totalNumOfPagesOfFiles);
 
-                        status.setText("Page " + (currentPage + 1) + " Converted " +
-                                Utility.formatNum(((currentPage + 1) * 1.0 / totalNumberOfPages) * 100) + "%");
-                    });
+                                status.setText("Page " + (currentPageStat.get() + 1) + " Converted " +
+                                        Utility.formatNum(((currentPageStat.get() + 1) * 1.0 / totalNumOfPagesOfFiles) * 100) + "%");
+                            });
 
-                    System.out.println("Page " + (currentPage + 1) + " Converted ==> " +
-                            Utility.formatNum(((currentPage + 1) * 1.0 / totalNumberOfPages) * 100) + "%");
-
-                    if ((currentPage + 1) == totalNumberOfPages) {
-                        Platform.runLater(() -> {
-                            convertButton.setVisible(true);
-                            inputBox.setDisable(false);
-                            chooseOutputDirButton.setDisable(false);
+                            System.out.println("Page " + (currentPageStat.get() + 1) + " Converted ==> " +
+                                    Utility.formatNum(((currentPageStat.get() + 1) * 1.0 / totalNumOfPagesOfFiles) * 100) + "%");
+                            currentPageStat.getAndIncrement();
                         });
+                        // if last file
+                        if (files.indexOf(file) == (files.size() - 1)) {
+                            Platform.runLater(() -> {
+                                convertButton.setVisible(true);
+                                inputBox.setDisable(false);
+                                chooseOutputDirButton.setDisable(false);
+                            });
+                        }
+                    } catch (Exception ex) {
+                        Logger.error(ex.getLocalizedMessage(), ex, getClass().getName() + ".convert()");
+                        Platform.runLater(() -> BuilderUI.showExceptionDialog(ex));
                     }
-                });
-            } catch (Exception ex) {
-                Logger.error(ex.getLocalizedMessage(), ex, getClass().getName() + ".convert()");
-                Platform.runLater(() -> BuilderUI.showExceptionDialog(ex));
-            }
-        }).start();
+                })).start();
     }
 
     private boolean canConvert() {
-        return (chosenPDF != null && chosenPDF.exists()) && (outputDir != null);
+        return (files != null && !files.isEmpty()) && (outputDir != null);
     }
 }

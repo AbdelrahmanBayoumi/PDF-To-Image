@@ -1,6 +1,5 @@
 package com.bayoumi;
 
-import com.bayoumi.controllers.home.HomeController;
 import com.bayoumi.util.Constants;
 import com.bayoumi.util.Logger;
 import com.bayoumi.util.Utility;
@@ -44,7 +43,6 @@ public class Launcher extends Application {
             // --- load Homepage FXML ---
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Locations.Home.toString()));
             Scene scene = new Scene(loader.load());
-            HomeController homeController = loader.getController();
             // add loaded scene to primaryStage
             primaryStage.setScene(scene);
             // set Title and Icon to primaryStage

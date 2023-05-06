@@ -348,3 +348,17 @@
 .jfx-slider > .animated-thumb {
     -fx-background-color: -fx-secondary;
 }
+.file-container{
+    -fx-background-color: -fx-secondary-light;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: gray;
+    -fx-alignment: top-left;
+    -fx-spacing: 15;
+}
+
+.file-container .label{
+    -fx-text-fill:  -fx-secondary-text;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-max-width: infinity;
+}
