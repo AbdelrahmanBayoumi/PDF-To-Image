@@ -120,4 +120,19 @@
         </HBox>
         <JFXProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" minHeight="20.0" progress="0.0" VBox.vgrow="ALWAYS" />
     </VBox>
+   <HBox>
+      <VBox.margin>
+         <Insets bottom="-17.0" top="-2.0" />
+      </VBox.margin>
+      <children>
+         <Label onMouseClicked="#openAbout" text="Created by Abd El-Rahman Bayoumi">
+            <font>
+               <Font size="13.0" />
+            </font>
+            <cursor>
+               <Cursor fx:constant="HAND" />
+            </cursor>
+         </Label>
+      </children>
+   </HBox>
 </VBox>

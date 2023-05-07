@@ -23,7 +23,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import java.awt.*;
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,5 +232,14 @@ public class HomeController implements Initializable {
 
     private boolean canConvert() {
         return (files != null && !files.isEmpty()) && (outputDir != null);
+    }
+
+    @FXML
+    private void openAbout() {
+        try {
+            Desktop.getDesktop().browse(new URI("https://github.com/AbdelrahmanBayoumi"));
+        } catch (Exception ex) {
+            Logger.error(ex.getLocalizedMessage(), ex, getClass().getName() + ".openAbout()");
+        }
     }
 }
