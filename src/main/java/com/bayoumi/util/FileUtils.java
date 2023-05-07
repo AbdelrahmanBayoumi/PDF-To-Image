@@ -3,7 +3,7 @@ package com.bayoumi.util;
 import java.io.File;
 
 public class FileUtils {
-    public static  String getFileExtension(File file) {
+    public static String getFileExtension(File file) {
         if (file == null)
             return "";
         final String name = file.getName();

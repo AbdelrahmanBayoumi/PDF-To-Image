@@ -8,7 +8,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class FileBox extends HBox {
-    public FileBox(String fileNameValue, int numberOfPagesValue){
+    public FileBox(String fileNameValue, int numberOfPagesValue) {
         getStyleClass().add("file-container");
         FontAwesomeIconView icon = new FontAwesomeIconView(FontAwesomeIcon.FILE_TEXT_ALT);
         icon.setStyle("-fx-fill: white;-fx-font-size:50;");
@@ -17,6 +17,6 @@ public class FileBox extends HBox {
         HBox.setHgrow(vBox, Priority.ALWAYS);
         Label fileName = new Label("File Name: " + fileNameValue);
         Label numberOfPages = new Label("Number of pages: " + numberOfPagesValue);
-        vBox.getChildren().addAll(fileName,numberOfPages);
+        vBox.getChildren().addAll(fileName, numberOfPages);
     }
 }
