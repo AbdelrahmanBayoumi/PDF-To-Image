@@ -61,7 +61,7 @@
         max-width: 800px;
         background-color: #fff;
         padding: 20px;
-        border-radius: 4px;
+        border-radius: 7px;
         box-shadow: 0 2px 4px 3px rgb(0 0 0 / 37%);
       }
 
@@ -97,7 +97,8 @@
         margin-bottom: 10px;
       }
 
-      .download-button button {
+      .download-button a {
+        display: inline-block;
         padding: 10px 20px;
         font-size: 16px;
         background-color: #28a745;
@@ -105,14 +106,11 @@
         border: none;
         cursor: pointer;
         border-radius: 4px;
-      }
-
-      .download-button button:hover {
-        background-color: #0056b3;
-      }
-
-      .download-button a {
         text-decoration: none;
+      }
+
+      .download-button a:hover {
+        background-color: green;
       }
 
       img.demo-image {
@@ -120,6 +118,12 @@
         margin: 20px auto;
         max-width: 100%;
         height: auto;
+      }
+
+      .download-icon {
+        font-size: 24px;
+        color: #ffffff;
+        margin-right: 5px;
       }
 
       .github-icon {
@@ -146,6 +150,7 @@
         margin-bottom: 30px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         max-width: 800px;
+        border-radius: 10px;
       }
       .icon-download:before {
         content: "\e902";
@@ -163,14 +168,10 @@
         <a
           href="https://github.com/AbdelrahmanBayoumi/PDF-To-Image/releases/download/v2.0.0/PDF-To-Image-2.0.0.exe"
         >
-          <button>
-            <i
-              style="padding-inline-end: 10px; font-size: 25px"
-              class="fa fa-download"
-              aria-hidden="true"
-            ></i>
-            <b>Download Now</b>
-          </button>
+          <span class="download-icon"
+            ><i class="fa fa-download" aria-hidden="true"></i
+          ></span>
+          Download Now
         </a>
       </div>
       <div class="documentation">
